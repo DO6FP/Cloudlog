@@ -1,4 +1,4 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /*
 	Controls the interaction with the QRZ.com Subscription based XML API.
@@ -11,7 +11,7 @@ class Qrz {
 	public function session($username, $password) {
 		// URL to the XML Source
 		$xml_feed_url = 'http://xmldata.qrz.com/xml/current/?username='.$username.';password='.urlencode($password).';agent=cloudlog';
-		
+
 		// CURL Functions
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $xml_feed_url);
@@ -19,22 +19,22 @@ class Qrz {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$xml = curl_exec($ch);
 		curl_close($ch);
-		
+
 		// Create XML object
 		$xml = simplexml_load_string($xml);
-		
+
 		// Return Session Key
 		return (string) $xml->Session->Key;
 	}
-	
+
 	// Set Session Key session.
 	public function set_session($username, $password) {
-	
+
 		$ci = & get_instance();
-		
+
 		// URL to the XML Source
 		$xml_feed_url = 'http://xmldata.qrz.com/xml/current/?username='.$username.';password='.urlencode($password).';agent=cloudlog';
-		
+
 		// CURL Functions
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $xml_feed_url);
@@ -42,14 +42,14 @@ class Qrz {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$xml = curl_exec($ch);
 		curl_close($ch);
-		
+
 		// Create XML object
 		$xml = simplexml_load_string($xml);
-		
+
 		$key = (string) $xml->Session->Key;
-	
+
 		$ci->session->set_userdata('qrz_session_key', $key);
-		
+
 		return true;
 	}
 
@@ -85,7 +85,7 @@ class Qrz {
 
             // Sanitise gridsquare to only allow up to 8 characters
             $unclean_gridsquare = (string)$xml->Callsign->grid; // Get the gridsquare from QRZ convert to string
-            $clean_gridsquare = strlen($unclean_gridsquare) > 8 ? substr($unclean_gridsquare,0,8) : $unclean_gridsquare; // Trim gridsquare to 8 characters max
+            $clean_gridsquare = strlen($unclean_gridsquare) > 6 ? substr($unclean_gridsquare,0,8) : $unclean_gridsquare; // Trim gridsquare to 6 characters max
             $data['gridsquare'] = $clean_gridsquare;
 
             $data['city'] = (string)$xml->Callsign->addr2;
